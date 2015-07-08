@@ -20,7 +20,7 @@ router.get('/', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
 
-        connection.query('INSERT INTO User (facebookID, right) VALUES (?, ?);', [req.body.nickname, req.body.content], function (error, info) {
+        connection.query('INSERT INTO User (facebookID, right) VALUES (?, ?);', [req.body.facebookID, req.body.right], function (error, info) {
 
                 if (error == null) {
 
