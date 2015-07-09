@@ -39,33 +39,9 @@ router.post('/', function(req, res, next) {
     connection.query('INSERT INTO Bambu_Board (nickname, content) VALUES (?, ?);',
                     [req.body.nickname, req.body.content], function(error, info) {
         
-        if(error == null) {
-            
-            connection.query('SELECT * FROM Bambu_Board WHERE boardID = ?;',
-                            [info.insertId], function(error, cursor) {
-                
-                if(cursor.length > 0) {
-                    
-                    res.json( {
-                        
-                        result : true,
-                        boardID : cursor[0].boardID,
-                        appID : cursor[0].appID,
-                        boardname : cursor[0].boardname,
-                        nickname : cursor[0].nickname,
-                        content : cursor[0].content,
-                        timestamp : cursor[0].timestamp,
-                        like : cursor[0].like,
-                        warn : cursor[0].warn,
-                        
-                    });
-                }
-                else
-                    res.status(503).json({ result : false, reason : "Cannot post article"});
-            });
+        if(error != null) {
+            res.status(503),json(error);
         }
-        
-        else res.status(503),json(error);
     });
 });
 

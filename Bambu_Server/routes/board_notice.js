@@ -33,51 +33,17 @@ router.get('/:board_id', function(req, res, next) {
         });
 });
 
-router.post('/', function(req, res, next) {         
-    // Bambu 게시판에 새로운 글 추가
-
-        connection.query('INSERT INTO Notice_Board (nickname, content) VALUES (?, ?);',
-                         [req.body.nickname, req.body.content], function (error, info) {
-
-                if (error == null) {
-
-                        connection.query('SELECT * FROM Notice_Board WHERE boardID = ?;',
-                                         [req.params.board_id], function (error, cursor) {
-
-                                if (cursor.length > 0) {
-
-                                        var result = cursor[0];
-
-                                        res.json({
-                                            
-                                            result : true,
-                                            boardID : result.boardID,
-                                            appID : result.appID,
-                                            boardname : result.boardname,
-                                            nickname : result.nickname,
-                                            
-                                            timestamp : result.timestamp,
-                                            like : result.like,
-                                            warn : result.warn,
-                                        });
-                                }
-                            
-                                else {
-                                    
-                                    res.status(503).json({
-                                        
-                                        result : false,
-                                        reason : "Cannot post article"
-                                    });
-                                }
-                        });
-                }
-                else {
-                    
-                    res.status(503).json(error);
-                }
-        });
+router.post('/', function(req, res, next) {
+    
+    connection.query('INSERT INTO Notice_Board (nickname, content) VALUES (?, ?);',
+                    [req.body.nickname, req.body.content], function(error, info) {
+        
+        if(error != null) {
+            res.status(503),json(error);
+        }
+    });
 });
+
 
 router.post('/:board_id/update', function(req, res, next) {     // Bambu 게시판에 올라와 있는 글 수정
 
