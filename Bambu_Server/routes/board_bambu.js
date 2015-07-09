@@ -36,15 +36,40 @@ router.get('/:board_id', function(req, res, next) {
 // Bambu 게시판에 새로운 글 추가
 router.post('/', function(req, res, next) {         
     
-        connection.query('insert into Bambu_Board(nickname, content, boardname) values (?, ?);',
-                         [req.body.nickname, req.body.content, req.body.boardname], function (error, info) {
+        connection.query('insert into Bambu_Board(nickname, content) values (?, ?);',
+                         [req.body.nickname, req.body.content], function (error, info) {
 
                 if (error == null) {
 
-                        connection.query('SELECT * FROM Bambu_Board ORDER BY timestamp desc;', function (error, cursor) {
+                        connection.query('SELECT * FROM Bambu_Board WHERE boardID = ?;',
+                                         [req.params.board_id], function (error, cursor) {
+
+                                if (cursor.length > 0) {
+
+                                        var result = cursor[0];
+
+                                        res.json({
+                                            
+                                            result : true,
+                                            boardID : result.boardID,
+                                            appID : result.appID,
+                                            boardname : result.boardname,
+                                            nickname : result.nickname,
+                                            content : result.content,
+                                            timestamp : result.timestamp,
+                                            like : result.like,
+                                            warn : result.warn,
+                                        });
+                                }
                             
-                            res.json(cursor);
-                            
+                                else {
+                                    
+                                    res.status(503).json({
+                                        
+                                        result : false,
+                                        reason : "Cannot post article"
+                                    });
+                                }
                         });
                 }
                 else {
