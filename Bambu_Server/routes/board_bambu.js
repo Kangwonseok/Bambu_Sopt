@@ -34,49 +34,39 @@ router.get('/:board_id', function(req, res, next) {
 });
 
 // Bambu 게시판에 새로운 글 추가
-router.post('/', function(req, res, next) {         
+router.post('/', function(req, res, next) {
     
-        connection.query('insert into Bambu_Board(nickname, content) values (?, ?);',
-                         [req.body.nickname, req.body.content], function (error, info) {
-
-                if (error == null) {
-
-                        connection.query('SELECT * FROM Bambu_Board WHERE boardID = ?;',
-                                         [req.params.board_id], function (error, cursor) {
-
-                                if (cursor.length > 0) {
-
-                                        var result = cursor[0];
-
-                                        res.json({
-                                            
-                                            result : true,
-                                            boardID : result.boardID,
-                                            appID : result.appID,
-                                            boardname : result.boardname,
-                                            nickname : result.nickname,
-                                            content : result.content,
-                                            timestamp : result.timestamp,
-                                            like : result.like,
-                                            warn : result.warn,
-                                        });
-                                }
-                            
-                                else {
-                                    
-                                    res.status(503).json({
-                                        
-                                        result : false,
-                                        reason : "Cannot post article"
-                                    });
-                                }
-                        });
-                }
-                else {
+    connection.query('INSERT INTO Bambu_Board (nickname, content) VALUES (?, ?);',
+                    [req.body.nickname, req.body.content], function(error, info) {
+        
+        if(error == null) {
+            
+            connection.query('SELECT * FROM Bambu_Board WHERE boardID = ?;',
+                            [info.insertId], function(error, cursor) {
+                
+                if(cursor.length > 0) {
                     
-                    res.status(503).json(error);
+                    res.json( {
+                        
+                        result : true,
+                        boardID : cursor[0].boardID,
+                        appID : cursor[0].appID,
+                        boardname : cursor[0].boardname,
+                        nickname : cursor[0].nickname,
+                        content : cursor[0].content,
+                        timestamp : cursor[0].timestamp,
+                        like : cursor[0].like,
+                        warn : cursor[0].warn,
+                        
+                    });
                 }
-        });
+                else
+                    res.status(503).json({ result : false, reason : "Cannot post article"});
+            });
+        }
+        
+        else res.status(503),json(error);
+    });
 });
 
 router.post('/:board_id/update', function(req, res, next) {     // Bambu 게시판에 올라와 있는 글 수정
