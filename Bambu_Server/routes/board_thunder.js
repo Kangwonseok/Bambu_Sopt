@@ -121,9 +121,9 @@ router.get('/:board_id/comment/delete/:comment_id', function(req, res, next) {  
         res.end();
 });
                 
-router.post('/:board_id/like', function(req, res, next) {     // Bambu 게시판에 몇번 게시글에 달린 특정 댓글 수정
+router.post('/:board_id/good', function(req, res, next) {     // Bambu 게시판에 몇번 게시글에 달린 특정 댓글 수정
 
-        connection.query('UPDATE Thunder_Board SET like=like+1 WHERE boardID=?;', 
+        connection.query('UPDATE Thunder_Board SET good=good+1 WHERE boardID=?;', 
                          [req.params.board_id]);
     
         res.writeHead(302, {'Location' : '/'});
