@@ -85,14 +85,14 @@ router.get('/:board_id/comment', function(req, res, next) {     // Bambu 게시�
 });
 
 router.post('/:board_id/comment/post', function(req, res, next) {
-    connection.query('INSERT INTO Bambu_Comment (nickname, content) VALUES (?, ?);',
-                         [req.body.nickname, req.body.content], function (error, info) {
-            
+    connection.query('INSERT INTO Bambu_Comment (nickname, content, boardID) VALUES (?, ?, ?);',
+                         [req.body.nickname, req.body.content, req.params.board_id], function (error, info) {
+
             if (error == null) {
                 
-                connection.query('SELECT * FROM Bambu_Comment WHERE boardID = ?;',
+               var query = connection.query('SELECT * FROM Bambu_Comment WHERE boardID = ?;',
                                  [req.params.board_id], function (error, cursor) {
-
+                                console.log(query);
                                 if (cursor.length > 0) {
 
                                         var result = cursor[0];
@@ -104,7 +104,7 @@ router.post('/:board_id/comment/post', function(req, res, next) {
                                             appID : result.appID,
                                             boardID : result.boardID,
                                             nickname : result.nickname,
-                                            
+                                            content : result.content,
                                             timestamp : result.timestamp,
                                         });
                                 }
