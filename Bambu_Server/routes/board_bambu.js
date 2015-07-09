@@ -85,44 +85,22 @@ router.get('/:board_id/comment', function(req, res, next) {     // Bambu 게시�
 });
 
 router.post('/:board_id/comment/post', function(req, res, next) {
-    connection.query('INSERT INTO Bambu_Comment (nickname, content, boardID) VALUES (?, ?, ?);',
-                         [req.body.nickname, req.body.content, req.params.board_id], function (error, info) {
-
-            if (error == null) {
-                
-               var query = connection.query('SELECT * FROM Bambu_Comment WHERE boardID = ?;',
-                                 [req.params.board_id], function (error, cursor) {
-                                console.log(query);
-                                if (cursor.length > 0) {
-
-                                        var result = cursor[0];
-
-                                        res.json({
-                                            
-                                            result : true,
-                                            commentID : result.commentID,
-                                            appID : result.appID,
-                                            boardID : result.boardID,
-                                            nickname : result.nickname,
-                                            content : result.content,
-                                            timestamp : result.timestamp,
-                                        });
-                                }
-                                else {
-                                    
-                                    res.status(503).json({
-                                        
-                                        result : false,
-                                        reason : "Cannot post comment"
-                                    });
-                                }
-                        });
-                }
-                else {
+    connection.query('INSERT INTO Bambu_Comment (boardID, nickname, content) VALUES (?, ?);',
+                         [req.params.board_id, req.body.nickname, req.body.content], function (error, info) {
+        
+        if (error == null) {
                     
-                    res.status(503).json(error);
-                }
-        });
+                    connection.query('SELECT * FROM Bambu_Comment ORDER BY timestamp asc;', function (error, cursor) {
+                        
+                        res.json(cursor);
+                });
+            }
+        else {
+            
+            res.status(503).json(error);
+            
+        }
+    });
 });
 
 router.post('/:board_id/comment/update/:comment_id', function(req, res, next) {     // Bambu 게시판에 몇번 게시글에 달린 특정 댓글 수정
