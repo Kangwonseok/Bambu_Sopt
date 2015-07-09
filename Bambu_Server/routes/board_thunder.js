@@ -55,7 +55,6 @@ router.post('/', function(req, res, next) {
         });
 });
 
-
 router.post('/:board_id/update', function(req, res, next) {     // Bambu 게시판에 올라와 있는 글 수정
 
         connection.query('UPDATE Thunder_Board SET nickname=?, content=? WHERE boardID=?;', 
@@ -86,44 +85,22 @@ router.get('/:board_id/comment', function(req, res, next) {     // Bambu 게시�
 });
 
 router.post('/:board_id/comment/post', function(req, res, next) {
-    connection.query('INSERT INTO Thunder_Comment (nickname, content) VALUES (?, ?);',
-                         [req.body.nickname, req.body.content], function (error, info) {
-            
-            if (error == null) {
-                
-                connection.query('SELECT * FROM Thunder_Comment WHERE boardID = ?;',
-                                 [req.params.board_id], function (error, cursor) {
-
-                                if (cursor.length > 0) {
-
-                                        var result = cursor[0];
-
-                                        res.json({
-                                            
-                                            result : true,
-                                            commentID : result.commentID,
-                                            appID : result.appID,
-                                            boardID : result.boardID,
-                                            nickname : result.nickname,
-                                            
-                                            timestamp : result.timestamp,
-                                        });
-                                }
-                                else {
-                                    
-                                    res.status(503).json({
-                                        
-                                        result : false,
-                                        reason : "Cannot post comment"
-                                    });
-                                }
-                        });
-                }
-                else {
+    connection.query('INSERT INTO Thunder_Comment (nickname, content, boardID) VALUES (?, ?, ?);',
+                         [req.body.nickname, req.body.content, req.params.board_id], function (error, info) {
+        
+        if (error == null) {
                     
-                    res.status(503).json(error);
-                }
-        });
+                    connection.query('SELECT * FROM Thunder_Comment ORDER BY timestamp asc;', function (error, cursor) {
+                        
+                        res.json(cursor);
+                });
+            }
+        else {
+            
+            res.status(503).json(error);
+            
+        }
+    });
 });
 
 router.post('/:board_id/comment/update/:comment_id', function(req, res, next) {     // Bambu 게시판에 몇번 게시글에 달린 특정 댓글 수정
@@ -144,4 +121,22 @@ router.get('/:board_id/comment/delete/:comment_id', function(req, res, next) {  
         res.end();
 });
                 
+router.post('/:board_id/like', function(req, res, next) {     // Bambu 게시판에 몇번 게시글에 달린 특정 댓글 수정
+
+        connection.query('UPDATE Thunder_Board SET like=like+1 WHERE boardID=?;', 
+                         [req.params.board_id]);
+    
+        res.writeHead(302, {'Location' : '/'});
+        res.end();
+});
+
+router.post('/:board_id/warn', function(req, res, next) {     // Bambu 게시판에 몇번 게시글에 달린 특정 댓글 수정
+
+        connection.query('UPDATE Thunder_Board SET warn=warn+1 WHERE boardID=?;', 
+                         [req.params.board_id]);
+    
+        res.writeHead(302, {'Location' : '/'});
+        res.end();
+});
+
 module.exports = router;

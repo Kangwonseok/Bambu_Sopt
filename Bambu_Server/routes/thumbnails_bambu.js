@@ -16,6 +16,7 @@ router.get('/', function(req, res, next) {
         
       res.json(cursor);
    });
+    
 });
 
 module.exports = router;
