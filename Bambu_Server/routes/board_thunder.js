@@ -33,16 +33,26 @@ router.get('/:board_id', function(req, res, next) {
         });
 });
 
-        //Bambu 게시파판에 새로운 글 추가
-router.post('/', function(req, res, next) {
-    
-    connection.query('INSERT INTO Thunder_Board (nickname, content) VALUES (?, ?);',
-                    [req.body.nickname, req.body.content], function(error, info) {
+router.post('/', function(req, res, next) {         
+    // Bambu 게시판에 새로운 글 추가
+
+        connection.query('INSERT INTO Thunder_Board (nickname, content) VALUES (?, ?);',
+                         [req.body.nickname, req.body.content], function (error, info) {
+
+                if (error == null) {
+                    
+                    connection.query('SELECT * FROM Thunder_Board ORDER BY timestamp desc;', function (error, cursor) {
         
-        if(error != null) {
-            res.status(503),json(error);
-        }
-    });
+                    res.json(cursor);
+                    });
+
+                        
+                }
+                else {
+                    
+                    res.status(503).json(error);
+                }
+        });
 });
 
 

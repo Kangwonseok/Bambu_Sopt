@@ -33,21 +33,31 @@ router.get('/:board_id', function(req, res, next) {
         });
 });
 
-// Bambu 게시판에 새로운 글 추가
-router.post('/', function(req, res, next) {
-    
-    connection.query('INSERT INTO Bambu_Board (nickname, content) VALUES (?, ?);',
-                    [req.body.nickname, req.body.content], function(error, info) {
+router.post('/', function(req, res, next) {         
+    // Bambu 게시판에 새로운 글 추가
+
+        connection.query('INSERT INTO Bambu_Board (nickname, content) VALUES (?, ?);',
+                         [req.body.nickname, req.body.content], function (error, info) {
+
+                if (error == null) {
+                    
+                    connection.query('SELECT * FROM Bambu_Board ORDER BY timestamp desc;', function (error, cursor) {
         
-        if(error != null) {
-            res.status(503),json(error);
-        }
-    });
+                    res.json(cursor);
+                    });
+
+                        
+                }
+                else {
+                    
+                    res.status(503).json(error);
+                }
+        });
 });
 
 router.post('/:board_id/update', function(req, res, next) {     // Bambu 게시판에 올라와 있는 글 수정
 
-        connection.query('UPDATE Bambu_Board SET nickname=?, content=? WHERE boardID=?;', 
+        connection.query('UPDATE Thunder_Board SET nickname=?, content=? WHERE boardID=?;', 
                          [req.body.nickname, req.body.content, req.params.board_id]);
     
         res.writeHead(302, {'Location' : '/'});
