@@ -36,8 +36,8 @@ router.get('/:board_id', function(req, res, next) {
 router.post('/', function(req, res, next) {         
     // Bambu 게시판에 새로운 글 추가
 
-        connection.query('INSERT INTO Thunder_Board (nickname, content) VALUES (?, ?);',
-                         [req.body.nickname, req.body.content], function (error, info) {
+        connection.query('INSERT INTO Thunder_Board (appID, nickname, content) VALUES (?, ?, ?);',
+                         [req.body.appID, req.body.nickname, req.body.content], function (error, info) {
 
                 if (error == null) {
                     
@@ -85,8 +85,8 @@ router.get('/:board_id/comment', function(req, res, next) {     // Bambu 게시�
 });
 
 router.post('/:board_id/comment/post', function(req, res, next) {
-    connection.query('INSERT INTO Thunder_Comment (nickname, content, boardID) VALUES (?, ?, ?);',
-                         [req.body.nickname, req.body.content, req.params.board_id], function (error, info) {
+    connection.query('INSERT INTO Thunder_Comment (appID, nickname, content, boardID) VALUES (?, ?, ?, ?);',
+                         [req.body.appID, req.body.nickname, req.body.content, req.params.board_id,], function (error, info) {
         
         if (error == null) {
                     
@@ -121,16 +121,23 @@ router.get('/:board_id/comment/delete/:comment_id', function(req, res, next) {  
         res.end();
 });
                 
-router.post('/:board_id/good', function(req, res, next) {     // Bambu 게시판에 몇번 게시글에 달린 특정 댓글 수정
-
-        connection.query('UPDATE Thunder_Board SET good=good+1 WHERE boardID=?;', 
-                         [req.params.board_id]);
+router.post('/:board_id/good', function(req, res, next) {     // Bambu 게시판에 좋아요 수 증가
     
-        res.writeHead(302, {'Location' : '/'});
-        res.end();
-});
+        connection.query('UPDATE Thunder_Board SET good=good+1 WHERE boardID=?;', 
+                         [req.params.board_id],function (error, result) {
 
-router.post('/:board_id/warn', function(req, res, next) {     // Bambu 게시판에 몇번 게시글에 달린 특정 댓글 수정
+                if (error) {
+                    
+                    throw error;            
+                }
+                else {
+
+                    res.json({status: "SUCCESS"});
+                }
+        });   
+}); 
+
+router.post('/:board_id/warn', function(req, res, next) {     // Bambu 게시판에 신고 수 증가
 
         connection.query('UPDATE Thunder_Board SET warn=warn+1 WHERE boardID=?;', 
                          [req.params.board_id]);

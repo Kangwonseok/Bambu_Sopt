@@ -36,8 +36,8 @@ router.get('/:board_id', function(req, res, next) {
 router.post('/', function(req, res, next) {         
     // Bambu 게시판에 새로운 글 추가
 
-        connection.query('INSERT INTO Bambu_Board (nickname, content) VALUES (?, ?);',
-                         [req.body.nickname, req.body.content], function (error, info) {
+        connection.query('INSERT INTO Bambu_Board (appID, nickname, content) VALUES (?, ?, ?);',
+                         [req.body.appID, req.body.nickname, req.body.content], function (error, info) {
 
                 if (error == null) {
                     
@@ -85,8 +85,8 @@ router.get('/:board_id/comment', function(req, res, next) {     // Bambu 게시�
 });
 
 router.post('/:board_id/comment/post', function(req, res, next) {
-    connection.query('INSERT INTO Bambu_Comment (nickname, content, boardID) VALUES (?, ?, ?);',
-                         [req.body.nickname, req.body.content, req.params.board_id], function (error, info) {
+    connection.query('INSERT INTO Bambu_Comment (appID, nickname, content, boardID) VALUES (?, ?, ?, ?);',
+                         [req.body.appID, req.body.nickname, req.body.content, req.params.board_id,], function (error, info) {
         
         if (error == null) {
                     

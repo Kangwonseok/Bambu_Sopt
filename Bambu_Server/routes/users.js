@@ -12,7 +12,7 @@ var connection = mysql.createConnection({
 
 router.get('/', function(req, res, next) {
   
-   connection.query('SELECT appID, facebookID, right FROM User ORDER BY appID desc;', function (error, cursor) {
+   connection.query('SELECT * FROM User appID desc;', function (error, cursor) {
         
       res.json(cursor);
    });
@@ -20,11 +20,13 @@ router.get('/', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
 
-        connection.query('INSERT INTO User (facebookID, right) VALUES (?, ?);', [req.body.facebookID, req.body.right], function (error, info) {
+        connection.query('INSERT INTO User (facebookID) VALUES (?);', 
+                         [req.body.facebookID], function (error, info) {
 
                 if (error == null) {
 
-                        connection.query('SELECT * FROM User WHERE appID = ?;', [info.insertId], function (error, cursor) {
+                        connection.query('SELECT * FROM User WHERE appID = ?;', 
+                                         [info.insertId], function (error, cursor) {
 
                                 if (cursor.length > 0) {
 
@@ -34,8 +36,6 @@ router.post('/', function(req, res, next) {
 
                                     result : true,
                                                 appID : result.appID,
-                                                facebookID : result.facebookID,
-                                                right : result.right,
                                         });
                                 }
                                 else {
