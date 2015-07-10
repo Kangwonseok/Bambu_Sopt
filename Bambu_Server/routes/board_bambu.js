@@ -121,16 +121,33 @@ router.get('/:board_id/comment/delete/:comment_id', function(req, res, next) {  
         res.end();
 });
                 
-router.post('/:board_id/good', function(req, res, next) {     // Bambu 게시판에 몇번 게시글에 달린 특정 댓글 수정
+router.post('/:board_id/good', function(req, res, next) {     // Bambu 게시판에 좋아요 수 증가
 
-        connection.query('UPDATE Bambu_Board SET good=good+1 WHERE boardID=?;', 
-                         [req.params.board_id]);
     
-        res.writeHead(302, {'Location' : '/'});
-        res.end();
-});
+    
+        connection.query('UPDATE Bambu_Board SET good=good+1 WHERE boardID=?;', 
+                         [req.params.board_id],function (error, info) {
 
-router.post('/:board_id/warn', function(req, res, next) {     // Bambu 게시판에 몇번 게시글에 달린 특정 댓글 수정
+                if (error == null) {
+                    
+                    connection.query('SELECT * FROM Bambu_Board ORDER BY timestamp desc;', function (error, cursor) {
+        
+                    res.json(cursor);
+                    });
+
+                        
+                }
+                else {
+                    
+                    res.status(503).json(error);
+                }
+        });
+    
+    
+    
+}); 
+
+router.post('/:board_id/warn', function(req, res, next) {     // Bambu 게시판에 신고 수 증가
 
         connection.query('UPDATE Bambu_Board SET warn=warn+1 WHERE boardID=?;', 
                          [req.params.board_id]);
