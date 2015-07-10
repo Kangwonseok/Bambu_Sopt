@@ -85,8 +85,8 @@ router.get('/:board_id/comment', function(req, res, next) {     // Bambu 게시�
 });
 
 router.post('/:board_id/comment/post', function(req, res, next) {
-    connection.query('INSERT INTO Bambu_Comment (appID, nickname, content, boardID) VALUES (?, ?, ?, ?);',
-                         [req.body.appID, req.body.nickname, req.body.content, req.params.board_id,], function (error, info) {
+    connection.query('INSERT INTO Bambu_Comment (nickname, content, boardID) VALUES (?, ?, ?);',
+                         [req.body.nickname, req.body.content, req.params.board_id], function (error, info) {
         
         if (error == null) {
                     
