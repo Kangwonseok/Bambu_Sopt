@@ -36,8 +36,8 @@ router.get('/:board_id', function(req, res, next) {
 router.post('/', function(req, res, next) {         
     // Bambu 게시판에 새로운 글 추가
 
-        connection.query('INSERT INTO Thunder_Board (appID, nickname, content) VALUES (?, ?, ?);',
-                         [req.body.appID, req.body.nickname, req.body.content], function (error, info) {
+        connection.query('INSERT INTO Thunder_Board (nickname, content) VALUES (?, ?);',
+                         [req.body.nickname, req.body.content], function (error, info) {
 
                 if (error == null) {
                     
