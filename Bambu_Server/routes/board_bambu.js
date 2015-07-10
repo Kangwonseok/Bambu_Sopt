@@ -122,29 +122,19 @@ router.get('/:board_id/comment/delete/:comment_id', function(req, res, next) {  
 });
                 
 router.post('/:board_id/good', function(req, res, next) {     // Bambu 게시판에 좋아요 수 증가
-
-    
     
         connection.query('UPDATE Bambu_Board SET good=good+1 WHERE boardID=?;', 
-                         [req.params.board_id],function (error, info) {
+                         [req.params.board_id],function (error, result) {
 
-                if (error == null) {
+                if (error) {
                     
-                    connection.query('SELECT * FROM Bambu_Board ORDER BY timestamp desc;', function (error, cursor) {
-        
-                    res.json(cursor);
-                    });
-
-                        
+                    throw error;            
                 }
                 else {
-                    
-                    res.status(503).json(error);
+
+                    res.json({status: "SUCCESS"});
                 }
-        });
-    
-    
-    
+        });   
 }); 
 
 router.post('/:board_id/warn', function(req, res, next) {     // Bambu 게시판에 신고 수 증가
